@@ -34,9 +34,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-situ-950 text-slate-100 flex flex-col">
+    <div className="h-screen w-screen overflow-hidden bg-[#1e2633] text-slate-100 flex flex-col">
       <Navbar />
-      <main className="flex-1 pb-12">{children}</main>
+      <main className="flex-1 overflow-hidden">{children}</main>
     </div>
   );
 };
@@ -139,7 +139,7 @@ export const App: React.FC = () => {
             />
 
             {/* Default fallback */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/aar" replace />} />
           </Routes>
         </SessionProvider>
       </AuthProvider>

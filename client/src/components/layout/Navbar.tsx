@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Shield,
   Clock,
@@ -15,17 +15,25 @@ import {
   ChevronDown,
   Layers,
   Terminal,
+  HelpCircle,
+  User,
+  Crosshair,
+  Award,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSession } from '../../context/SessionContext';
 
 export const Navbar: React.FC = () => {
   const { user, logout, switchUser } = useAuth();
-  const { session, simTime, sessionStatus, assignedRoleId, setAssignedRoleId } = useSession();
+  const { session, simTime, sessionStatus } = useSession();
   const location = useLocation();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // Quick switch demo accounts
+  const [gameMasterOpen, setGameMasterOpen] = useState(false);
+  const [personaOpen, setPersonaOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  // Quick switch demo military personas
   const demoAccounts = [
     { name: 'Col. Rajiv Sharma', role: 'Instructor', email: 'instructor@mod.gov.in', color: 'border-blue-500 text-blue-400' },
     { name: 'Major A. Verma', role: 'Land Lead', email: 'land.trainee@mod.gov.in', color: 'border-emerald-500 text-emerald-400' },
@@ -41,89 +49,182 @@ export const Navbar: React.FC = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const navLinks = [
-    { name: 'Dashboard', path: '/dashboard', icon: Layers },
-    { name: 'Scenario Library', path: '/scenarios', icon: Compass },
-    { name: 'Studio', path: '/studio', icon: Sliders, role: ['instructor', 'admin'] },
-    { name: 'Session Lobby', path: '/lobby', icon: Users },
-    { name: 'Live Room', path: '/live', icon: Radio },
-    { name: 'Instructor Console', path: '/instructor', icon: Terminal, role: ['instructor', 'admin'] },
-    { name: 'Performance', path: '/performance', icon: BarChart3 },
-    { name: 'AAR Replay', path: '/aar', icon: PlayCircle },
-    { name: 'Reports', path: '/reports', icon: FileText },
-  ];
-
-  if (user?.role === 'admin') {
-    navLinks.push({ name: 'Admin', path: '/admin', icon: UserCheck });
-  }
-
   return (
-    <header className="sticky top-0 z-50 bg-situ-950/95 backdrop-blur-md border-b border-situ-800 shadow-md">
-      {/* Top Banner with Platform ID & Quick Demo Role Switcher */}
-      <div className="bg-situ-900 border-b border-situ-850 px-4 py-1.5 flex items-center justify-between text-xs text-slate-300">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-            <span className="font-semibold text-slate-200">SITU-AWARE</span>
-            <span className="text-[10px] bg-situ-800 px-2 py-0.5 rounded text-slate-400 font-mono border border-situ-700">
-              SIH26248 • MoD
-            </span>
-          </div>
-          <span className="hidden md:inline text-slate-500 text-[11px]">
-            Multi-Domain Decision-Making Trainer for Degraded Communication Environments
-          </span>
-        </div>
-
-        {/* Live Session Clock Ticker */}
-        <div className="flex items-center gap-3">
-          {session && (
-            <div className="flex items-center gap-2 bg-situ-950 px-2.5 py-0.5 rounded border border-situ-700 font-mono text-[11px]">
-              <span className="text-slate-400">SESSION:</span>
-              <span className="text-cyan-400 font-bold">{session.sessionCode}</span>
-              <span className="text-slate-600">|</span>
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-amber-300 font-bold">{formatTime(simTime)}</span>
-              <span
-                className={`ml-1 px-1.5 py-0.2 rounded text-[9px] font-bold uppercase ${
-                  sessionStatus === 'active'
-                    ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                    : sessionStatus === 'paused'
-                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                    : 'bg-slate-800 text-slate-300'
-                }`}
-              >
-                {sessionStatus}
+    <header className="sticky top-0 z-50 bg-[#163f72] border-b border-[#0f2c52] shadow-lg select-none text-white font-sans">
+      {/* Top Main Navigation Bar (Steel Blue Banner from Image 1) */}
+      <div className="px-4 py-1.5 flex items-center justify-between text-xs font-medium">
+        {/* Left Side: Red Crest Logo & Main Navigation Tabs */}
+        <div className="flex items-center gap-4">
+          {/* Professional Military Defence Crest Emblem */}
+          <Link to="/aar" className="flex items-center gap-2.5 group">
+            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-md border border-cyan-400/40 group-hover:scale-105 transition-transform">
+              <Shield className="w-4 h-4 text-cyan-200 fill-cyan-400/20" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-extrabold tracking-wider text-white text-sm leading-tight font-mono">
+                SITU<span className="text-cyan-400">AWARE</span>
+              </span>
+              <span className="text-[9px] text-cyan-200/70 font-mono tracking-tighter hidden sm:inline">
+                MINISTRY OF DEFENCE
               </span>
             </div>
-          )}
+          </Link>
 
-          {/* Quick Switch Persona Dropdown */}
+          {/* Primary Navigation Items (Matching Image 1: Take a Course, Learner Profile, Course Creator...) */}
+          <nav className="flex items-center space-x-1 sm:space-x-3 text-xs">
+            {/* Take a Course (Tactical Simulation / AAR Cockpit from Image 1) */}
+            <Link
+              to="/aar"
+              className={`px-2.5 py-1 rounded transition-colors ${
+                location.pathname === '/aar' || location.pathname === '/live'
+                  ? 'bg-[#0f2d52] text-cyan-300 font-bold border border-cyan-500/40 shadow-sm'
+                  : 'text-slate-200 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Take a Course
+            </Link>
+
+            {/* Learner Profile (Scores & Analytics from Image 2) */}
+            <Link
+              to="/performance"
+              className={`px-2.5 py-1 rounded transition-colors ${
+                location.pathname === '/performance'
+                  ? 'bg-[#0f2d52] text-cyan-300 font-bold border border-cyan-500/40 shadow-sm'
+                  : 'text-slate-200 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Learner Profile
+            </Link>
+
+            {/* Course Creator (Scenario Studio) */}
+            <Link
+              to="/studio"
+              className={`px-2.5 py-1 rounded transition-colors ${
+                location.pathname === '/studio'
+                  ? 'bg-[#0f2d52] text-cyan-300 font-bold border border-cyan-500/40 shadow-sm'
+                  : 'text-slate-200 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Course Creator
+            </Link>
+
+            {/* Publish Courses (Scenario Library) */}
+            <Link
+              to="/scenarios"
+              className={`px-2.5 py-1 rounded transition-colors ${
+                location.pathname === '/scenarios'
+                  ? 'bg-[#0f2d52] text-cyan-300 font-bold border border-cyan-500/40 shadow-sm'
+                  : 'text-slate-200 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Publish Courses
+            </Link>
+
+            {/* Game Master Dropdown (Instructor & Exercise Controller) */}
+            <div className="relative">
+              <button
+                onClick={() => setGameMasterOpen(!gameMasterOpen)}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors ${
+                  location.pathname === '/instructor'
+                    ? 'bg-[#0f2d52] text-cyan-300 font-bold border border-cyan-500/40'
+                    : 'text-slate-200 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <span>Game Master</span>
+                <ChevronDown className="w-3 h-3 text-slate-300" />
+              </button>
+
+              {gameMasterOpen && (
+                <div className="absolute left-0 mt-1 w-52 bg-[#1a2b44] border border-slate-600 rounded-lg shadow-2xl py-1 z-50 text-xs">
+                  <Link
+                    to="/instructor"
+                    onClick={() => setGameMasterOpen(false)}
+                    className="block px-3 py-1.5 hover:bg-blue-600/30 text-slate-200"
+                  >
+                    Instructor Cockpit & Injects
+                  </Link>
+                  <Link
+                    to="/lobby"
+                    onClick={() => setGameMasterOpen(false)}
+                    className="block px-3 py-1.5 hover:bg-blue-600/30 text-slate-200"
+                  >
+                    Multiplayer Session Lobby
+                  </Link>
+                  <Link
+                    to="/reports"
+                    onClick={() => setGameMasterOpen(false)}
+                    className="block px-3 py-1.5 hover:bg-blue-600/30 text-slate-200"
+                  >
+                    Export Official PDF & CSV
+                  </Link>
+                  {user?.role === 'admin' && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setGameMasterOpen(false)}
+                      className="block px-3 py-1.5 hover:bg-blue-600/30 text-slate-200 border-t border-slate-700"
+                    >
+                      User & System Admin
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          </nav>
+        </div>
+
+        {/* Right Side: Quick Persona Switcher, Help, User Avatar, Window Controls */}
+        <div className="flex items-center gap-3">
+          {/* Mode Switcher Pill: [Tactical Cockpit (Image 1)] | [Scores (Image 2)] */}
+          <div className="hidden lg:flex items-center bg-[#0d2647] rounded border border-blue-400/30 p-0.5 text-[11px]">
+            <Link
+              to="/aar"
+              className={`px-2 py-0.5 rounded transition-all ${
+                location.pathname === '/aar'
+                  ? 'bg-blue-500 text-white font-bold shadow'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              Tactical Cockpit (Image 1)
+            </Link>
+            <Link
+              to="/performance"
+              className={`px-2 py-0.5 rounded transition-all ${
+                location.pathname === '/performance'
+                  ? 'bg-blue-500 text-white font-bold shadow'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              Scores & Analytics (Image 2)
+            </Link>
+          </div>
+
+          {/* Quick Persona Switcher */}
           <div className="relative">
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-1.5 bg-situ-800 hover:bg-situ-700 px-2.5 py-1 rounded text-slate-200 text-[11px] border border-situ-600 transition-colors"
+              onClick={() => setPersonaOpen(!personaOpen)}
+              className="flex items-center gap-1.5 bg-[#0f2d52] hover:bg-[#163c6c] px-2 py-1 rounded text-slate-200 text-[11px] border border-blue-500/40 transition-colors"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-              <span className="font-medium">
-                {user ? `${user.name} (${user.role.toUpperCase()})` : 'Select Persona'}
+              <span className="font-semibold max-w-[120px] truncate">
+                {user ? user.name : 'Switch Role'}
               </span>
               <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
 
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-1 w-64 bg-situ-900 border border-slate-700 rounded-lg shadow-2xl py-1 z-50 text-xs">
-                <div className="px-3 py-1.5 border-b border-slate-800 text-[10px] text-slate-400 uppercase font-mono">
-                  Quick Switch Evaluation Accounts
+            {personaOpen && (
+              <div className="absolute right-0 mt-1 w-64 bg-[#142338] border border-slate-600 rounded-lg shadow-2xl py-1 z-50 text-xs">
+                <div className="px-3 py-1.5 border-b border-slate-700 text-[10px] text-slate-400 uppercase font-mono">
+                  Quick Switch Military Persona
                 </div>
                 {demoAccounts.map((acc) => (
                   <button
                     key={acc.email}
                     onClick={() => {
                       switchUser(acc.email);
-                      setDropdownOpen(false);
+                      setPersonaOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 hover:bg-situ-800 flex items-center justify-between transition-colors ${
-                      user?.email === acc.email ? 'bg-situ-800/80 font-bold' : ''
+                    className={`w-full text-left px-3 py-1.5 hover:bg-blue-600/30 flex items-center justify-between transition-colors ${
+                      user?.email === acc.email ? 'bg-blue-600/40 font-bold' : ''
                     }`}
                   >
                     <div>
@@ -135,11 +236,11 @@ export const Navbar: React.FC = () => {
                     </span>
                   </button>
                 ))}
-                <div className="border-t border-slate-800 mt-1 pt-1">
+                <div className="border-t border-slate-700 mt-1 pt-1">
                   <button
                     onClick={() => {
                       logout();
-                      setDropdownOpen(false);
+                      setPersonaOpen(false);
                     }}
                     className="w-full text-left px-3 py-1.5 text-red-400 hover:bg-red-950/40 flex items-center gap-1.5 text-xs"
                   >
@@ -149,56 +250,45 @@ export const Navbar: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Main Navigation Links */}
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-13 py-2">
-          {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded bg-gradient-to-br from-cyan-600 via-situ-600 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-cyan-900/30">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <div className="font-extrabold tracking-wider text-slate-100 text-base flex items-center gap-1 font-mono">
-                SITU<span className="text-cyan-400">AWARE</span>
-              </div>
-              <div className="text-[9px] text-slate-400 font-mono tracking-tight -mt-1">
-                DECISION RESILIENCE TRAINER
-              </div>
-            </div>
-          </Link>
-
-          {/* Links */}
-          <div className="flex items-center space-x-1 overflow-x-auto py-1">
-            {navLinks.map((link) => {
-              // Role check
-              if (link.role && (!user || !link.role.includes(user.role))) {
-                return null;
-              }
-
-              const Icon = link.icon;
-              const isActive = location.pathname === link.path;
-
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    isActive
-                      ? 'bg-cyan-950 text-cyan-300 border border-cyan-700/80 shadow-sm'
-                      : 'text-slate-300 hover:text-white hover:bg-situ-850'
-                  }`}
+          {/* Help Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setHelpOpen(!helpOpen)}
+              className="flex items-center gap-1 text-slate-200 hover:text-white"
+            >
+              <span>Help</span>
+              <ChevronDown className="w-3 h-3 text-slate-300" />
+            </button>
+            {helpOpen && (
+              <div className="absolute right-0 mt-1 w-44 bg-[#1a2b44] border border-slate-600 rounded-lg shadow-xl py-1 z-50 text-xs">
+                <a
+                  href="#guide"
+                  onClick={() => setHelpOpen(false)}
+                  className="block px-3 py-1.5 hover:bg-blue-600/30 text-slate-200"
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
-                  <span>{link.name}</span>
-                </Link>
-              );
-            })}
+                  Quick User Guide
+                </a>
+                <a
+                  href="#shortcuts"
+                  onClick={() => setHelpOpen(false)}
+                  className="block px-3 py-1.5 hover:bg-blue-600/30 text-slate-200"
+                >
+                  Tactical Keybindings
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* User Profile */}
+          <div className="flex items-center gap-1.5 text-slate-200">
+            <User className="w-3.5 h-3.5 text-slate-300" />
+            <span className="font-medium text-xs">
+              {user ? (user.name.includes(' ') ? user.name.split(' ')[0] : user.name) : 'mhuffman'}
+            </span>
           </div>
         </div>
-      </nav>
+      </div>
     </header>
   );
 };
