@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const RAW_API_URL = (import.meta.env.VITE_API_URL as string) || '';
+export const API_BASE_URL = RAW_API_URL ? `${RAW_API_URL.replace(/\/$/, '')}/api` : '/api';
+
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -66,8 +69,8 @@ export const decisionApi = {
 export const aarApi = {
   get: (sessionId: string) => api.get(`/aar/${sessionId}`),
   generate: (sessionId: string) => api.post(`/aar/${sessionId}/generate`),
-  downloadPdfUrl: (sessionId: string) => `/api/aar/${sessionId}/download-pdf`,
-  downloadCsvUrl: (sessionId: string) => `/api/aar/${sessionId}/download-csv`,
+  downloadPdfUrl: (sessionId: string) => `${API_BASE_URL}/aar/${sessionId}/download-pdf`,
+  downloadCsvUrl: (sessionId: string) => `${API_BASE_URL}/aar/${sessionId}/download-csv`,
 };
 
 export const userApi = {

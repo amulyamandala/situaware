@@ -21,10 +21,40 @@ import userRoutes from './routes/userRoutes';
 const app = express();
 const server = http.createServer(app);
 
+const configuredOrigins = (ENV.CLIENT_URL || '')
+  .split(',')
+  .map((u) => u.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
+const defaultOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+
+const isOriginAllowed = (origin: string | undefined): boolean => {
+  if (!origin) return true;
+  const cleanOrigin = origin.replace(/\/$/, '');
+  if (configuredOrigins.includes(cleanOrigin) || defaultOrigins.includes(cleanOrigin)) {
+    return true;
+  }
+  if (cleanOrigin.endsWith('.vercel.app')) {
+    return true;
+  }
+  return false;
+};
+
 // Socket.IO
 const io = new SocketIOServer(server, {
   cors: {
-    origin: [ENV.CLIENT_URL, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: (origin, callback) => {
+      if (isOriginAllowed(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('CORS blocked for Socket.IO origin'));
+      }
+    },
     credentials: true,
   },
 });
@@ -35,7 +65,14 @@ setupSocketHandlers(io);
 // Middleware
 app.use(
   cors({
-    origin: [ENV.CLIENT_URL, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: (origin, callback) => {
+      if (isOriginAllowed(origin)) {
+        callback(null, true);
+      } else {
+        console.warn(`[CORS] Blocked request from origin: ${origin}`);
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
     credentials: true,
   })
 );
