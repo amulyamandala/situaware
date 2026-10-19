@@ -1,5 +1,4 @@
 # SITU-AWARE: Immersive Multi-Domain Decision-Making Trainer for Degraded Communication Environments
-### Smart India Hackathon — Problem Statement ID: SIH26248
 **Organization:** Ministry of Defence, Government of India  
 **Tagline:** *Train for uncertainty. Measure decision resilience.*
 
@@ -19,7 +18,7 @@ The cornerstone differentiator of SITU-AWARE is the **Decision Resilience Engine
 
 ## 2. Key Capabilities & Problem Statement Compliance
 
-| SIH26248 Requirement | Implementation in SITU-AWARE |
+| Requirement | Implementation in SITU-AWARE |
 |-----------------------|------------------------------|
 | **Multi-Domain Training** | Dedicated working synthetic feeds and interactive visualizers for all 4 domains: **Land** (Tactical Map), **Air** (PPI Radar with 360° sweep), **Cyber** (Defensive node topology), and **Electronic Warfare** (ESM spectrum waterfall & DF bearing). |
 | **Degraded Communications Engine** | Live injection of all 3 mandatory disruption types: **Delays** (configurable latency), **Dropouts** (persisted failure audit), and **Conflicting Reports** (divergent sensor observations). |
@@ -39,23 +38,7 @@ The cornerstone differentiator of SITU-AWARE is the **Decision Resilience Engine
 - **Testing**: Vitest, Supertest (20 automated integration and E2E tests passing).
 
 ---
-
-## 4. Default Seed Accounts (Quick-Switch in UI)
-
-The platform comes pre-seeded with realistic fictional military accounts. Use the **Quick Switch Persona** dropdown in the top navbar to instantly change roles without typing credentials:
-
-| Persona Name | Role | Email | Password | Assigned Domain |
-|--------------|------|-------|----------|-----------------|
-| **Col. Rajiv Sharma** | Instructor | `instructor@mod.gov.in` | `defence123` | Command & Control / Controller |
-| **Major A. Verma** | Trainee | `land.trainee@mod.gov.in` | `defence123` | Land Domain Lead (`land_lead`) |
-| **Sqn Ldr R. Sen** | Trainee | `air.trainee@mod.gov.in` | `defence123` | Joint Air Defense Controller (`air_controller`) |
-| **Capt. K. Roy** | Trainee | `cyber.trainee@mod.gov.in` | `defence123` | Tactical Cyber Specialist (`cyber_officer`) |
-| **Lt Cdr V. Rao** | Trainee | `ew.trainee@mod.gov.in` | `defence123` | Electronic Warfare Officer (`ew_officer`) |
-| **HQ Administrator** | Admin | `admin@mod.gov.in` | `defence123` | User Administration & System Config |
-
----
-
-## 5. End-to-End SIH26248 Demonstration Flow
+## 4. End-to-End SIH26248 Demonstration Flow
 
 ### Step 1: Instructor Overview & Session Initialization
 1. Navigate to `http://localhost:3000/login` and click **Col. Rajiv Sharma (Instructor)**.
@@ -106,7 +89,7 @@ The platform comes pre-seeded with realistic fictional military accounts. Use th
 
 ---
 
-## 6. Installation & Development Setup
+## 5. Installation & Development Setup
 
 ### Prerequisites
 - Node.js v18+ (tested on v22.14.0)
@@ -135,37 +118,8 @@ Open your browser at **`http://localhost:3000`**.
 
 ---
 
-## 7. Automated Test Coverage
-
-The platform includes full automated integration and E2E test suites with **20 passing tests**:
-
-```
-✓ tests/e2e_journey.test.ts (8 tests)
-  ✓ Step 1 & 2: Trainees join session with distinct operational roles
-  ✓ Step 3: Instructor starts session authoritative simulation clock
-  ✓ Step 4: Instructor injects delay, dropout, and conflicting disruptions
-  ✓ Step 5: Trainees exchange cross-domain tactical communications
-  ✓ Step 6: Trainees submit decisions evaluated against authoritative history
-  ✓ Step 7: Instructor computes Decision Resilience Index (DRI) assessments
-  ✓ Step 8: Instructor reconstructs trainee information state at decision time
-  ✓ Step 9: Instructor downloads genuine official PDF and CSV reports
-
-✓ tests/situaware.test.ts (12 tests)
-  ✓ 1. Authentication and Role-Based Permissions (JWT, RBAC)
-  ✓ 2. Scenario Creation and Validation (rubric weights sum to 1.0)
-  ✓ 3. Session Lifecycle Transitions (Start, Pause, Resume, Complete)
-  ✓ 4. Communication Degradation Engine (Delays, Dropouts, Conflicts)
-  ✓ 5. Decision Resilience Engine & Evidence Verification
-  ✓ 6. Exportable AAR Generation (PDFKit Binary Buffer & Fast-CSV)
-```
-
-Run tests at any time with:
-```bash
-npm --prefix server test
-```
-
 ---
-## 8. SIH26248 Problem Statement Compliance Summary
+## 6. Problem Statement Compliance Summary
 
 - **Multi-Domain Feeds**: 100% Implemented (Land, Air, Cyber, EW).
 - **Communication Degradation**: 100% Implemented (Delay, Dropout, Conflicting Intel live injection).
